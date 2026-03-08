@@ -2,9 +2,12 @@ import subprocess
 import urllib.request
 import urllib.parse
 import json
+from dotenv import load_dotenv
 from google.adk.agents.llm_agent import Agent
 from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.exit_loop_tool import exit_loop
+
+load_dotenv()
 
 def shutdown_orin_nano():
     """Shuts down the remote Orin Nano system."""

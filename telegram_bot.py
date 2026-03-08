@@ -2,20 +2,24 @@ import os
 import httpx
 import logging
 import whisper
+from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+
+load_dotenv()
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-ADK_API_URL = "http://localhost:8000/run"
+ADK_API_URL = os.getenv("ADK_API_URL", "http://localhost:8000/run")
+ADK_APP_NAME = os.getenv("ADK_APP_NAME", "local_adk_agent_bot")
 
 print("Loading Whisper Speech-to-Text model...")
 whisper_model = whisper.load_model("base")
 
 async def forward_to_adk(user_text, user_id, chat_id, update):
     payload = {
-        "app_name": "my_agent",
+        "app_name": ADK_APP_NAME,
         "user_id": user_id,
         "session_id": chat_id,
         "new_message": {"role": "user", "parts": [{"text": user_text}]}
@@ -40,6 +44,7 @@ async def forward_to_adk(user_text, user_id, chat_id, update):
                 await update.message.reply_text("Agent processed the message but didn't return a text response.")
     except Exception as e:
         await update.message.reply_text(f"Error communicating with agent: {e}")
+        print(f"Error communicating with agent: {e}")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text

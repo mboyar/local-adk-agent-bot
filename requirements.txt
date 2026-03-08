@@ -1,0 +1,20 @@
+# Google Agent Development Kit
+google-adk
+
+# LLM integration (used by ADK's LiteLlm wrapper and PDF query tool)
+litellm
+
+# PDF reading for the query_pdf_book tool
+pypdf
+
+# Telegram bot
+python-telegram-bot
+
+# Async HTTP client (for forwarding messages to ADK API)
+httpx
+
+# OpenAI Whisper for voice message transcription
+openai-whisper
+
+# Load environment variables from .env file
+python-dotenv
