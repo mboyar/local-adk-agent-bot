@@ -7,6 +7,7 @@ This project integrates a Google ADK-based agent with a Telegram bot and uses a 
 - **Text messages** — forwarded to the ADK agent and answered by the LLM.
 - **Voice messages** — transcribed locally with OpenAI Whisper, then forwarded to the agent.
 - **Tool use** — the agent can shut down the Orin Nano, create files, fetch weather forecasts, and query PDF books.
+- **Siemens Home Connect** — an included script (`siemens-home-connect-tool.py`) can fetch your appliances' door statuses.
 
 ## Prerequisites
 
@@ -118,6 +119,7 @@ The bot reads `TELEGRAM_TOKEN` from your `.env` file — no need to export it ma
 local-adk-agent-bot/
 ├── agent.py           # ADK agent definition with tools (shutdown, file creation, weather, PDF query)
 ├── telegram_bot.py    # Telegram bot that bridges messages to the ADK API server
+├── siemens-home-connect-tool.py # Script to get the door status of Siemens appliances
 ├── __init__.py        # Package init (imports agent)
 ├── requirements.txt   # Python dependencies
 ├── .env.example       # Environment variable template

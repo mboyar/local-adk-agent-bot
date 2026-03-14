@@ -62,6 +62,22 @@ def query_pdf_book(pdf_path: str, query: str):
     except Exception as e:
         return f"Error querying PDF: {e}"
 
+def get_home_appliances_door_status():
+    """Gets the door status (Open/Closed) of connected Siemens home appliances (like Dishwasher or FridgeFreezer) using the Home Connect API."""
+    import subprocess
+    import sys
+    import os
+    try:
+        # Run the script using the current python executable (from the venv)
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "siemens-home-connect-tool.py")
+        result = subprocess.run([sys.executable, script_path], capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+        else:
+            return f"Error executing tool: {result.stderr.strip() or result.stdout.strip()}"
+    except Exception as e:
+        return f"Exception while fetching appliance status: {e}"
+
 root_agent = Agent(
     model=LiteLlm(model='ollama_chat/qwen3:4b'),
     name='root_agent',
@@ -71,6 +87,7 @@ If the user asks you to shutdown the Orin Nano, use the shutdown_orin_nano tool.
 If the user asks you to shutdown the system run or yourself, use the exit_loop tool.
 If the user asks you to create a file, use the create_file tool.
 If the user asks you for tomorrow's weather forecast for a given place, use the get_tomorrow_weather_forecast tool.
-If the user asks you to get a hundreds page of pdf and answer queries based only on the book, use the query_pdf_book tool.""",
-    tools=[exit_loop, shutdown_orin_nano, create_file, get_tomorrow_weather_forecast, query_pdf_book],
+If the user asks you to get a hundreds page of pdf and answer queries based only on the book, use the query_pdf_book tool.
+If the user asks about the door status of connected Siemens home appliances (like the Fridge or Dishwasher), use the get_home_appliances_door_status tool.""",
+    tools=[exit_loop, shutdown_orin_nano, create_file, get_tomorrow_weather_forecast, query_pdf_book, get_home_appliances_door_status],
 )
