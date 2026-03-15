@@ -25,7 +25,7 @@ async def forward_to_adk(user_text, user_id, chat_id, update):
         "new_message": {"role": "user", "parts": [{"text": user_text}]}
     }
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=600.0) as client:
             response = await client.post(ADK_API_URL, json=payload)
             response.raise_for_status()
             events = response.json()
@@ -39,7 +39,10 @@ async def forward_to_adk(user_text, user_id, chat_id, update):
                             agent_response += part["text"] + "\n"
             
             if agent_response:
-                await update.message.reply_text(agent_response.strip())
+                text = agent_response.strip()
+                # Telegram has a 4096 character limit per message
+                for i in range(0, len(text), 4000):
+                    await update.message.reply_text(text[i:i+4000])
             else:
                 await update.message.reply_text("Agent processed the message but didn't return a text response.")
     except Exception as e:

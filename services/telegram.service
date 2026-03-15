@@ -1,0 +1,14 @@
+[Unit]
+Description=Telegram Bot Service
+After=my-google-adk.service
+Requires=my-google-adk.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/local-adk-agent
+ExecStart=/usr/sbin/runuser -u ${ADK_USER} -- /bin/bash -c "cd ${ADK_WORKDIR} && PATH=${ADK_WORKDIR}/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin exec ${ADK_WORKDIR}/.venv/bin/python3 telegram_bot.py"
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=ADK Agent Service
+After=ollama.service
+Requires=ollama.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/local-adk-agent
+ExecStart=/usr/sbin/runuser -u ${ADK_USER} -- /bin/bash -c "cd ${ADK_WORKDIR}/.. && PATH=${ADK_WORKDIR}/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin exec ${ADK_WORKDIR}/.venv/bin/adk api_server --port 8000 --auto_create_session ."
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
