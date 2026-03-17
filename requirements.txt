@@ -18,3 +18,5 @@ openai-whisper
 
 # Load environment variables from .env file
 python-dotenv
+# HTTP requests for eWeLink and Home Connect tools
+requests

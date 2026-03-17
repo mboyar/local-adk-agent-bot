@@ -78,6 +78,41 @@ def get_home_appliances_door_status():
     except Exception as e:
         return f"Exception while fetching appliance status: {e}"
 
+def list_ewelink_devices():
+    """Lists all eWeLink (Sonoff) WiFi devices associated with the account."""
+    import subprocess
+    import sys
+    import os
+    try:
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ewelink_tool.py")
+        result = subprocess.run([sys.executable, script_path, "list"], capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+        else:
+            return f"Error listing devices: {result.stderr.strip() or result.stdout.strip()}"
+    except Exception as e:
+        return f"Exception while listing devices: {e}"
+
+def control_ewelink_device(action: str, device_id: str = None):
+    """Controls an eWeLink (Sonoff) device (like a light). action: 'on' or 'off'. device_id is optional and defaults to the configured light."""
+    import subprocess
+    import sys
+    import os
+    try:
+        if not device_id:
+            device_id = os.environ.get("EWELINK_DEVICEID")
+        if not device_id:
+            return "Error: No device ID provided and no default EWELINK_DEVICEID set in .env"
+            
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ewelink_tool.py")
+        result = subprocess.run([sys.executable, script_path, action, device_id], capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+        else:
+            return f"Error controlling device: {result.stderr.strip() or result.stdout.strip()}"
+    except Exception as e:
+        return f"Exception while controlling device: {e}"
+
 root_agent = Agent(
     model=LiteLlm(model='ollama_chat/qwen3:4b'),
     name='root_agent',
@@ -88,6 +123,8 @@ If the user asks you to shutdown the system run or yourself, use the exit_loop t
 If the user asks you to create a file, use the create_file tool.
 If the user asks you for tomorrow's weather forecast for a given place, use the get_tomorrow_weather_forecast tool.
 If the user asks you to get a hundreds page of pdf and answer queries based only on the book, use the query_pdf_book tool.
-If the user asks about the door status of connected Siemens home appliances (like the Fridge or Dishwasher), use the get_home_appliances_door_status tool.""",
-    tools=[exit_loop, shutdown_orin_nano, create_file, get_tomorrow_weather_forecast, query_pdf_book, get_home_appliances_door_status],
+If the user asks about the door status of connected Siemens home appliances (like the Fridge or Dishwasher), use the get_home_appliances_door_status tool.
+If the user wants to list their eWeLink or Sonoff devices, use the list_ewelink_devices tool.
+If the user wants to turn a light or eWeLink device on or off, use the control_ewelink_device tool. If they just say 'light', use the default tool parameters.""",
+    tools=[exit_loop, shutdown_orin_nano, create_file, get_tomorrow_weather_forecast, query_pdf_book, get_home_appliances_door_status, list_ewelink_devices, control_ewelink_device],
 )

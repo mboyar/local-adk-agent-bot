@@ -8,6 +8,7 @@ This project integrates a Google ADK-based agent with a Telegram bot and uses a 
 - **Voice messages** — transcribed locally with OpenAI Whisper, then forwarded to the agent.
 - **Tool use** — the agent can shut down the Orin Nano, create files, fetch weather forecasts, and query PDF books.
 - **Siemens Home Connect** — an included script (`siemens-home-connect-tool.py`) can fetch your appliances' door statuses.
+- **eWeLink (Sonoff) Control** — an included tool (`ewelink_tool.py`) to list and control WiFi switches (e.g., Sonoff Basic) directly via the API V2.
 
 ## Prerequisites
 
@@ -42,6 +43,13 @@ TELEGRAM_TOKEN=your-telegram-bot-token-here
 
 # Set this if Ollama runs on a different machine (default: http://localhost:11434)
 OLLAMA_API_BASE=http://localhost:11434
+
+# eWeLink Credentials
+EWELINK_APPID=...
+EWELINK_APPSECRET=...
+EWELINK_EMAIL=...
+EWELINK_PASSWORD=...
+EWELINK_DEVICEID=... # Set your main light ID here for "light on/off" commands
 ```
 
 Both `agent.py` and `telegram_bot.py` load `.env` automatically via `python-dotenv`.
@@ -117,9 +125,10 @@ The bot reads `TELEGRAM_TOKEN` from your `.env` file — no need to export it ma
 
 ```
 local-adk-agent-bot/
-├── agent.py           # ADK agent definition with tools (shutdown, file creation, weather, PDF query)
+├── agent.py           # ADK agent definition with tools (shutdown, file creation, weather, PDF, HomeConnect, eWeLink)
 ├── telegram_bot.py    # Telegram bot that bridges messages to the ADK API server
 ├── siemens-home-connect-tool.py # Script to get the door status of Siemens appliances
+├── ewelink_tool.py    # Robust tool for automated eWeLink login and device control
 ├── __init__.py        # Package init (imports agent)
 ├── requirements.txt   # Python dependencies
 ├── .env.example       # Environment variable template
